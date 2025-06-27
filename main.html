@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOTRACK - Carbon Footprint Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #e8f5e9 0%, #f5f5f5 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            padding: 0 1rem 1rem 1rem; /* Remove the large top padding */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Background Elements */
+        .background-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .tree {
+            position: absolute;
+            background-size:cover;
+            background-repeat: no-repeat;
+        }
+
+        .tree-1 {
+            top: 130px;
+            left: 20px;
+            width: 80px;
+            height: 100px;
+            background-image: url('tree2.svg');
+        }
+
+        .tree-2 {
+            top: 70px;
+            right: 10px;
+            width: 150px;
+            height: 170px;
+            background-image: url('tree1.svg');
+        }
+
+        .tree-3 {
+            top: 180px;
+            left: 90%;
+            width: 50px;
+            height: 80px;
+            background-image: url('tree2.svg');
+        }
+
+        .cloud {
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .cloud-1 {
+            top: 30px;
+            right: 90px;
+            width: 100px;
+            height: 60px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'%3E%3Cpath d='M25,50 Q10,50 10,37.5 Q10,25 22.5,25 Q22.5,10 40,10 Q57.5,10 57.5,25 Q70,25 75,32.5 Q80,40 72.5,45 Q65,50 25,50 Z' fill='%23ffffff' opacity='0.7'/%3E%3C/svg%3E");
+        }
+
+        .cloud-2 {
+            top: 70px;
+            left: 30px;
+            width: 80px;
+            height: 50px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'%3E%3Cpath d='M25,50 Q10,50 10,37.5 Q10,25 22.5,25 Q22.5,10 40,10 Q57.5,10 57.5,25 Q70,25 75,32.5 Q80,40 72.5,45 Q65,50 25,50 Z' fill='%23ffffff' opacity='0.7'/%3E%3C/svg%3E");
+        }
+
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            color: #4CAF50;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .theme-switch-wrapper,
+        .achievements,
+        .achievement-dropdown-container {
+            position: static;
+        }
+
+        .achievement-dropdown-container {
+            position: relative;
+            z-index: 10000; /* Higher than .footprint-display */
+        }
+
+        .theme-switch {
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            position: relative;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        .slider.round {
+            border-radius: 24px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .achievements {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .badge.gold {
+            background-color: #FFD700;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12,2 L15,8 L22,9 L17,14 L18,21 L12,17.5 L6,21 L7,14 L2,9 L9,8 Z' fill='%23ffffff'/%3E%3C/svg%3E");
+        }
+
+        .badge.green {
+            background-color: #4CAF50;
+            border: 2px solid #388E3C;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16,8 L8,16 M8,8 L16,16' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E");
+        }
+
+        .achievement-dropdown-container {
+            position: relative;
+            z-index: 9999; /* Ensure it's above other elements */
+        }
+
+        .achievement-icon {
+            width: 36px;
+            height: 36px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            padding: 0;
+        }
+
+        .achievement-icon:hover {
+            background-color: rgba(255, 215, 0, 0.12);
+        }
+
+        .achievement-dropdown-menu {
+            display: none; /* Initially hidden */
+            position: absolute;
+            top: 110%; /* Position below the button */
+            right: 0;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            overflow: hidden;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            visibility: hidden;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .achievement-dropdown-menu.active {
+            display: block; /* Show the dropdown */
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .achievement-dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #444;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .achievement-dropdown-menu .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .achievement-dropdown-menu .dropdown-item svg {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        main {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 10rem; /* Add space between header and main content if needed */
+        }
+
+        /* Footprint Display */
+        .footprint-display {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1; /* Lower than dropdown */
+        }
+
+        .intro-text {
+            color: #555;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .circle-progress {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: conic-gradient(
+                #4DB6AC 0% 70%,
+                #E0F2F1 70% 100%
+            );
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle-progress::after {
+            content: '';
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background-color: white;
+        }
+
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .co2-label {
+            font-size: 1rem;
+            color: #4DB6AC;
+        }
+
+        .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4DB6AC;
+            line-height: 1;
+        }
+
+        .unit {
+            font-size: 1rem;
+            font-weight: normal;
+        }
+
+        .time-period {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .status-message {
+            margin-top: 1rem;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+
+        /* Weekly Chart */
+        .weekly-chart {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .period-selector {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 1rem;
+            gap: 10px;
+        }
+
+        .period {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s ease;
+        }
+
+        .period.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .period:hover:not(.active) {
+            background-color: #f0f0f0;
+        }
+
+        .period-name {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+
+        .chart-container {
+            height: 180px;
+            position: relative;
+        }
+
+        .day-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* Emissions Breakdown */
+        .emissions-breakdown {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pie-chart-container {
+            width: 100px;
+            height: 100px;
+        }
+
+        .legend {
+            flex: 1;
+            padding-left: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .transport-dot {
+            background-color: #E57373;
+        }
+
+        .lifestyle-dot {
+            background-color: #64B5F6;
+        }
+
+        .consumption-dot {
+            background-color: #9575CD;
+        }
+
+        /* Tips Section */
+        .tips-section {
+            background-color: #80CBC4;
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .tips-icon {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 1rem;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12,2 C16.4,2 20,5.6 20,10 C20,13 17,15.4 15,17 L15,19 L9,19 L9,17 C7,15.4 4,13 4,10 C4,5.6 7.6,2 12,2 Z M9,21 L15,21 L15,22 L9,22 L9,21 Z' fill='%2380CBC4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 60%;
+        }
+
+        .tips-content {
+            color: white;
+        }
+
+        .tips-content h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .tips-content p {
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .add-btn {
+            background-color: #76c043;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 1rem 2rem;
+            font-weight: 500;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            margin: 0 auto;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .plus-icon {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 0.75rem;
+            }
+            
+            .circle-progress {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .circle-progress::after {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .value {
+                font-size: 2rem;
+            }
+        }
+
+        /* Laptop View (1024px and above) */
+@media (min-width: 1024px) {
+    .app-container {
+        max-width: 900px; /* Increase the container width */
+        margin: 0 auto;
+        padding: 2rem; /* Add more padding for larger screens */
+        background: linear-gradient(180deg, #e8f5e9 0%, #f5f5f5 100%);
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem 0;
+    }
+
+    .logo {
+        font-size: 2.5rem; /* Increase logo size */
+    }
+
+    .header-controls {
+        gap: 3rem; /* Add more spacing between controls */
+    }
+
+    .achievement-dropdown-menu {
+        min-width: 250px; /* Increase dropdown width */
+    }
+
+    .footprint-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2rem;
+    }
+
+    .circle-progress {
+        width: 200px; /* Increase size of the progress circle */
+        height: 200px;
+    }
+
+    .circle-progress::after {
+        width: 180px;
+        height: 180px;
+    }
+
+    .progress-text {
+        font-size: 1.2rem; /* Adjust text size */
+    }
+
+    .weekly-chart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    .chart-container {
+        height: 300px; /* Increase chart height */
+        width: 100%;
+    }
+
+    .emissions-breakdown {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    .pie-chart-container {
+        width: 150px; /* Increase pie chart size */
+        height: 150px;
+    }
+
+    .legend {
+        padding-left: 2rem; /* Add more spacing for the legend */
+    }
+
+    .legend-item {
+        font-size: 1rem; /* Increase legend text size */
+    }
+
+    .tips-section {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    .tips-icon {
+        width: 60px; /* Increase size of the tips icon */
+        height: 60px;
+    }
+
+    .tips-content h2 {
+        font-size: 1.5rem; /* Increase tips header size */
+    }
+
+    .tips-content p {
+        font-size: 1.2rem; /* Increase tips text size */
+    }
+
+    footer {
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .add-btn {
+        max-width: 400px; /* Increase button width */
+        font-size: 1.2rem; /* Increase button font size */
+    }
+
+    /* Grid Layout for Main Content */
+    main {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two columns */
+        gap: 2rem; /* Add spacing between columns */
+        margin-top: 5rem; /* Adjust spacing from the header */
+    }
+
+    .footprint-display {
+        grid-column: span 2; /* Make the footprint display span both columns */
+    }
+
+    .weekly-chart {
+        grid-column: span 2; /* Make the weekly chart span both columns */
+    }
+
+    .emissions-breakdown {
+        grid-column: span 1; /* Place in the first column */
+    }
+
+    .tips-section {
+        grid-column: span 1; /* Place in the second column */
+    }
+}
+
+/* Dark Theme Styles */
+        body.dark-theme {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        .dark-theme .app-container {
+            background: linear-gradient(180deg, #1e3329 0%, #121212 100%);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-theme .logo {
+            color: #6BBD6E;
+        }
+
+        .dark-theme .footprint-display,
+        .dark-theme .weekly-chart,
+        .dark-theme .emissions-breakdown {
+            background-color: #222222;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-theme .circle-progress::after {
+            background-color: #222222;
+        }
+
+        .dark-theme .intro-text,
+        .dark-theme .legend-item,
+        .dark-theme .time-period {
+            color: #aaaaaa;
+        }
+
+        .dark-theme .co2-label,
+        .dark-theme .value {
+            color: #5DC6BB;
+        }
+
+        .dark-theme .status-message {
+            color: #6BBD6E;
+        }
+
+        .dark-theme .period {
+            color: #aaa;
+            border-color: #444;
+        }
+
+        .dark-theme .period.active {
+            background-color: #333333;
+        }
+
+        .dark-theme .period-name,
+        .dark-theme .day-labels span {
+            color: #888888;
+        }
+
+        .dark-theme .tips-section {
+            background-color: #2A5F5A;
+        }
+
+        .dark-theme .tips-icon {
+            background-color: #222222;
+        }
+
+        .dark-theme .add-btn {
+            background-color: #5a9d33;
+        }
+
+        .dark-theme .achievement-dropdown-menu {
+            background-color: #222222;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-theme .achievement-dropdown-menu .dropdown-item {
+            color: #dadada;
+        }
+
+        .dark-theme .achievement-dropdown-menu .dropdown-item:hover {
+            background-color: #2a2a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Background elements -->
+        <div class="background-elements">
+            <div class="tree tree-1"></div>
+            <div class="tree tree-2"></div>
+            <div class="tree tree-3"></div>
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+        </div>
+        
+        <!-- Header -->
+        <header>
+            <h1 class="logo">CO2Tracker</h1>
+            <div class="header-controls">
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="themeToggle">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="achievements">
+                    <div class="badge gold"></div>
+                    <div class="badge green"></div>
+                </div>
+                <div class="achievement-dropdown-container">
+                    <button class="achievement-icon" id="achievementToggle" aria-label="Achievements">
+                        <!-- Hexagon SVG Icon -->
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+                        <polygon points="12,2 22,7 22,17 12,22 2,17 2,7" stroke="#6bb13f" stroke-width="2" fill="none"/>
+                        <circle cx="12" cy="12" r="3" stroke="#6bb13f" stroke-width="2"/>
+                    </svg>
+                    </button>
+                    <div class="achievement-dropdown-menu" id="achievementDropdown">
+                        <div class="dropdown-item" data-action="achievements">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                <path fill="#FFD700" d="M17 3V2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v1H2v3a5 5 0 0 0 5 5h.17A5.98 5.98 0 0 0 11 16.92V19H8v2h8v-2h-3v-2.08A5.98 5.98 0 0 0 16.83 11H17a5 5 0 0 0 5-5V3h-5zm-9 5a3 3 0 0 1-3-3V5h3v3zm13-3a3 3 0 0 1-3 3V5h3v1z"/>
+                            </svg>
+                            <span>Achievements</span>
+                        </div>
+                        <div class="dropdown-item" data-action="profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                <path fill="#4CAF50" d="M12 12c2.7 0 8 1.34 8 4v2H4v-2c0-2.66 5.3-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                            </svg>
+                            <span>Profile</span>
+                        </div>
+                        <div class="dropdown-item" data-action="logout">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                <path fill="#E57373" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+                            </svg>
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main>
+            <!-- Carbon Footprint Display -->
+            <section class="footprint-display">
+                <p class="intro-text">See your carbon footprint today!</p>
+                <div class="circle-progress">
+                    <div class="progress-text">
+                        <span class="co2-label">CO<sub>2</sub></span>
+                        <span class="value">148<span class="unit">kg</span></span>
+                        <span class="time-period">Today</span>
+                    </div>
+                </div>
+                <p class="status-message">Good jobs!</p>
+            </section>
+            
+            <!-- Weekly Chart -->
+            <section class="weekly-chart">
+                <div class="period-selector">
+                    <button class="period" data-period="week">Week</button>
+                    <button class="period" data-period="month">Month</button>
+                    <button class="period active" data-period="year">Year</button>
+                </div>
+                <p class="period-name">December 2023</p>
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                    <div class="day-labels">
+                        <span>24</span>
+                        <span>25</span>
+                        <span>26</span>
+                        <span>27</span>
+                        <span>28</span>
+                        <span>29</span>
+                        <span>30</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Emissions Breakdown -->
+            <section class="emissions-breakdown">
+                <div class="pie-chart-container">
+                    <canvas id="breakdownChart"></canvas>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="color-dot transport-dot"></span>
+                        <span class="category">Transportation (420kg)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="color-dot lifestyle-dot"></span>
+                        <span class="category">Lifestyle (250kg)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="color-dot consumption-dot"></span>
+                        <span class="category">Consumption Habits (104kg)</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Tips Section -->
+            <section class="tips-section">
+                <div class="tips-icon"></div>
+                <div class="tips-content">
+                    <h2>Tips</h2>
+                    <p>Reduce your carbon footprint</p>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer>
+            
+            <a href="/carbonPorject/what.html" class="add-btn">
+                <span class="plus-icon">+</span>
+                Add Activities
+            </a>
+        </footer>
+    </div>
+    
+    <script>
+        // Global variables to store chart and data
+        let weeklyChart;
+        let chartData = {
+            week: {
+                labels: [],
+                values: [],
+                period: 'Current Week'
+            },
+            month: {
+                labels: [],
+                values: [],
+                period: 'Current Month'
+            },
+            year: {
+                labels: [],
+                values: [],
+                period: 'Current Year'
+            }
+        };
+        let currentPeriod = 'week';
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Show loading indicators
+            document.querySelector('.value').textContent = 'Loading...';
+            document.querySelector('.status-message').textContent = 'Fetching data...';
+            
+            // Fetch data from backend
+            const dailyData = await fetchDailyFootprint();
+            await fetchAllPeriodData(); // Fetch data for all time periods
+            const breakdownData = await fetchEmissionBreakdown();
+            const tipData = await fetchEcoTips();
+            
+            // Update daily footprint display
+            if (dailyData) {
+                document.querySelector('.value').innerHTML = 
+                    `${dailyData.footprint}<span class="unit">kg</span>`;
+                document.querySelector('.status-message').textContent = dailyData.status;
+                
+                // Show achievement badges if earned
+                if (dailyData.achievement) {
+                    document.querySelector('.badge.gold').style.display = 'flex';
+                } else {
+                    document.querySelector('.badge.gold').style.display = 'none';
+                }
+            }
+            
+            // Initialize charts
+            initializeCharts();
+            updateChartForPeriod(currentPeriod);
+            
+            // Add period selector event listeners
+            document.querySelectorAll('.period').forEach(button => {
+                button.addEventListener('click', function() {
+                    const period = this.dataset.period;
+                    
+                    // Update active state
+                    document.querySelectorAll('.period').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update chart for selected period
+                    updateChartForPeriod(period);
+                });
+            });
+            
+            // Update breakdown chart
+            const breakdownChartCtx = document.getElementById('breakdownChart').getContext('2d');
+            const breakdownChart = new Chart(breakdownChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: breakdownData.categories,
+                    datasets: [{
+                        data: breakdownData.values,
+                        backgroundColor: [
+                            '#E57373',
+                            '#64B5F6',
+                            '#9575CD'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + 'kg CO₂';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+            
+            // Update the legend with the actual values
+            const legendContainer = document.querySelector('.legend');
+            legendContainer.innerHTML = '';
+            
+            breakdownData.categories.forEach((category, index) => {
+                const value = breakdownData.values[index];
+                const dotColor = ['transport-dot', 'lifestyle-dot', 'consumption-dot'][index];
+                
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <span class="color-dot ${dotColor}"></span>
+                    <span class="category">${category} (${value}kg)</span>
+                `;
+                legendContainer.appendChild(legendItem);
+            });
+            
+            // Update tips section
+            if (!tipData.error) {
+                document.querySelector('.tips-content p').textContent = tipData.tip;
+            }
+
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('themeToggle');
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggle.checked = true;
+                updateChartsForTheme(true);
+            }
+            
+            // Handle toggle changes
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-theme');
+                    localStorage.setItem('theme', 'dark');
+                    updateChartsForTheme(true);
+                } else {
+                    document.body.classList.remove('dark-theme');
+                    localStorage.setItem('theme', 'light');
+                    updateChartsForTheme(false);
+                }
+            });
+            
+            function updateChartsForTheme(isDark) {
+                // Update chart text colors based on theme
+                const textColor = isDark ? '#aaaaaa' : '#666666';
+                
+                // Update weekly chart
+                weeklyChart.options.plugins.tooltip.bodyColor = textColor;
+                weeklyChart.update();
+                
+                // Update breakdown chart
+                breakdownChart.options.plugins.tooltip.bodyColor = textColor;
+                breakdownChart.update();
+            }
+            
+            // Circular progress animation
+            function animateProgress() {
+                const progress = document.querySelector('.circle-progress');
+                let percentage = 0;
+                const targetPercentage = 70;
+                const duration = 1500;
+                const interval = 10;
+                const step = (targetPercentage / duration) * interval;
+                
+                const animation = setInterval(() => {
+                    percentage += step;
+                    if (percentage >= targetPercentage) {
+                        percentage = targetPercentage;
+                        clearInterval(animation);
+                    }
+                    progress.style.background = `conic-gradient(
+                        ${document.body.classList.contains('dark-theme') ? '#5DC6BB' : '#4DB6AC'} 0% ${percentage}%,
+                        ${document.body.classList.contains('dark-theme') ? '#2A3B39' : '#E0F2F1'} ${percentage}% 100%
+                    )`;
+                }, interval);
+            }
+            
+            animateProgress();
+            
+            // Add activity button functionality
+            document.querySelector('.add-btn').addEventListener('click', function() {
+                window.location.href = 'add_activity.php';
+            });
+
+            // Achievement dropdown functionality
+            const achievementToggle = document.getElementById('achievementToggle');
+            const achievementDropdown = document.getElementById('achievementDropdown');
+
+            achievementToggle.addEventListener('click', function() {
+                const isVisible = achievementDropdown.style.display === 'block';
+                achievementDropdown.style.display = isVisible ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!achievementDropdown.contains(event.target) && event.target !== achievementToggle) {
+                    achievementDropdown.style.display = 'none';
+                }
+            });
+        });
+
+        async function fetchDailyFootprint() {
+            try {
+                const response = await fetch('get_daily_footprint.php');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error("Server error:", data.error);
+                    return { footprint: 0, status: 'Server error', achievement: false };
+                }
+
+                return {
+                    footprint: data.footprint || 0,
+                    status: data.status || 'No emissions recorded',
+                    achievement: data.achievement || false
+                };
+            } catch (error) {
+                console.error('Error fetching daily footprint:', error);
+                return { footprint: 0, status: 'Error loading data', achievement: false };
+            }
+        }
+
+        async function fetchAllPeriodData() {
+            try {
+                // Fetch week data
+                const weekResponse = await fetch('get_emissions.php?period=week');
+                if (weekResponse.ok) {
+                    const weekData = await weekResponse.json();
+                    processWeekData(weekData);
+                }
+                
+                // Fetch month data
+                const monthResponse = await fetch('get_emissions.php?period=month');
+                if (monthResponse.ok) {
+                    const monthData = await monthResponse.json();
+                    processMonthData(monthData);
+                }
+                
+                // Fetch year data
+                const yearResponse = await fetch('get_emissions.php?period=year');
+                if (yearResponse.ok) {
+                    const yearData = await yearResponse.json();
+                    processYearData(yearData);
+                }
+            } catch (error) {
+                console.error('Error fetching period data:', error);
+                // Use fallback data
+                setFallbackData();
+            }
+        }
+
+        // Process week data with proper day names
+        function processWeekData(data) {
+            if (!data || !data.emissions || data.emissions.length === 0) {
+                setFallbackWeekData();
+                return;
+            }
+            
+            // Sort by day number to ensure correct order
+            data.emissions.sort((a, b) => a.day_number - b.day_number);
+            
+            const labels = [];
+            const values = [];
+            
+            data.emissions.forEach(item => {
+                labels.push(item.date); // This should be the day name (Mon, Tue, etc.)
+                values.push(parseFloat(item.value) || 0);
+            });
+            
+            chartData.week = {
+                labels: labels,
+                values: values,
+                period: data.period || 'Current Week'
+            };
+        }
+
+        // Process month data with day numbers
+        function processMonthData(data) {
+            if (!data || !data.emissions || data.emissions.length === 0) {
+                setFallbackMonthData();
+                return;
+            }
+            
+            const labels = [];
+            const values = [];
+            
+            // Sort by date (day of month)
+            data.emissions.sort((a, b) => parseInt(a.date) - parseInt(b.date));
+            
+            data.emissions.forEach(item => {
+                labels.push(item.date); // Day of month (1-31)
+                values.push(parseFloat(item.value) || 0);
+            });
+            
+            chartData.month = {
+                labels: labels,
+                values: values,
+                period: data.period || 'Current Month'
+            };
+        }
+
+        // Process year data with month names
+        function processYearData(data) {
+            if (!data || !data.emissions || data.emissions.length === 0) {
+                setFallbackYearData();
+                return;
+            }
+            
+            // Sort by month number to ensure correct order
+            data.emissions.sort((a, b) => a.month_number - b.month_number);
+            
+            const labels = [];
+            const values = [];
+            
+            data.emissions.forEach(item => {
+                labels.push(item.date); // Month name (Jan, Feb, etc.)
+                values.push(parseFloat(item.value) || 0);
+            });
+            
+            chartData.year = {
+                labels: labels,
+                values: values,
+                period: data.period || 'Current Year'
+            };
+        }
+
+        function setFallbackData() {
+            setFallbackWeekData();
+            setFallbackMonthData();
+            setFallbackYearData();
+        }
+
+        function setFallbackWeekData() {
+            chartData.week = {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                values: [10, 8, 15, 12, 9, 5, 7],
+                period: 'Current Week'
+            };
+        }
+
+        function setFallbackMonthData() {
+            chartData.month = {
+                labels: ['1', '5', '10', '15', '20', '25', '30'],
+                values: [8, 12, 9, 15, 7, 10, 6],
+                period: 'Current Month'
+            };
+        }
+
+        function setFallbackYearData() {
+            chartData.year = {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                values: [40, 35, 30, 28, 33, 38, 42, 45, 39, 36, 32, 29],
+                period: 'Current Year'
+            };
+        }
+
+        function initializeCharts() {
+            const weeklyChartCtx = document.getElementById('weeklyChart').getContext('2d');
+            weeklyChart = new Chart(weeklyChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#D2B48C', '#66CDAA', '#FFA500', '#9ACD32',
+                            '#76C043', '#98FB98', '#7FFFD4', '#20B2AA',
+                            '#87CEFA', '#6495ED', '#BA55D3', '#FF69B4'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 8,
+                        barThickness: 20,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + 'kg CO₂';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            display: false,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            display: false,
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartForPeriod(period) {
+            currentPeriod = period;
+            const data = chartData[period];
+            
+            weeklyChart.data.labels = data.labels;
+            weeklyChart.data.datasets[0].data = data.values;
+            
+            if (data.labels.length > 10) {
+                weeklyChart.data.datasets[0].barThickness = 10;
+            } else if (data.labels.length > 7) {
+                weeklyChart.data.datasets[0].barThickness = 15;
+            } else {
+                weeklyChart.data.datasets[0].barThickness = 20;
+            }
+            
+            document.querySelector('.period-name').textContent = data.period;
+            weeklyChart.update();
+            updateLabels(data.labels);
+        }
+
+        // Update x-axis labels display with proper spacing
+        function updateLabels(labels) {
+            const dayLabelsContainer = document.querySelector('.day-labels');
+            dayLabelsContainer.innerHTML = '';
+            
+            // If we have too many labels, show a subset with proper spacing
+            let displayLabels = [...labels]; // Copy the array
+            let displayIndices = [];
+            
+            if (labels.length > 15) {
+                // For month view with many days, show only some markers
+                const step = Math.ceil(labels.length / 7);
+                displayIndices = Array.from({length: Math.ceil(labels.length/step)}, (_, i) => i * step);
+            } else {
+                // Show all labels if there aren't too many
+                displayIndices = Array.from({length: labels.length}, (_, i) => i);
+            }
+            
+            // Create even spacing for all possible positions
+            for (let i = 0; i < labels.length; i++) {
+                const span = document.createElement('span');
+                
+                // Only display text for indices we want to show
+                if (displayIndices.includes(i)) {
+                    span.textContent = labels[i];
+                } else {
+                    span.textContent = '';
+                    span.style.opacity = '0'; // Invisible but takes up space
+                }
+                
+                dayLabelsContainer.appendChild(span);
+            }
+        }
+
+        async function fetchEmissionBreakdown() {
+            try {
+                const response = await fetch('get_emission_breakdown.php');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const records = await response.json();
+                
+                if (records.error) {
+                    console.error("Server error:", records.error);
+                    return { 
+                        categories: ['Transportation', 'Energy', 'Consumption'],
+                        values: [0, 0, 0]
+                    };
+                }
+
+                // Use latest record (today’s or most recent)
+                const latest = records[0] || {};
+
+                return {
+                    categories: ['Transportation', 'Energy', 'Consumption'],
+                    values: [
+                        parseFloat(latest.travel_emissions || 0),
+                        parseFloat(latest.energy_emissions || 0),
+                        parseFloat(latest.waste_emissions || 0)
+                    ]
+                };
+            } catch (error) {
+                console.error('Error fetching emission breakdown:', error);
+                return { 
+                    categories: ['Transportation', 'Energy', 'Consumption'],
+                    values: [0, 0, 0]
+                };
+            }
+        }
+
+        async function fetchEcoTips() {
+            try {
+                const response = await fetch('api/get_eco_tips.php');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching eco tips:', error);
+                return { tip: 'Reduce your carbon footprint', error: true };
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const achievementToggle = document.getElementById('achievementToggle');
+            const achievementDropdown = document.getElementById('achievementDropdown');
+            
+            // Toggle dropdown when clicking achievement icon
+            achievementToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                achievementDropdown.classList.toggle('active');
+            });
+            
+            // Handle dropdown item clicks
+            achievementDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    achievementDropdown.classList.remove('active');
+                    switch(action) {
+                        case 'achievements':
+                            window.location.href = 'achievements.php';
+                            break;
+                        case 'profile':
+                            window.location.href = 'kya.html';
+                            break;
+                        case 'logout':
+                            window.location.href = 'logout.php';
+                            break;
+                    }
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!achievementToggle.contains(e.target) && !achievementDropdown.contains(e.target)) {
+                    achievementDropdown.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

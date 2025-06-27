@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add activity</title>
+    <meta name="viewport" content="width=375, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(to bottom, #eaf6e3 0%, #a6d6a1 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 24px 0 24px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #6bb13f;
+            margin-top: 6px;
+        }
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        .activity-categories {
+            margin: 32px 16px 0 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .category-box {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 16px 12px;
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        .category-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eaeaea;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            font-size: 2rem;
+        }
+        /* Make transport/energy/food/category icons grow a bit on hover */
+.category-icon:hover,
+.subcat:hover,
+.energy-subcat:hover,
+.food-subcat:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 16px rgba(135,200,110,0.18);
+    z-index: 2;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+}
+
+/* Also for selected activity mini-icons on the bottom bar */
+#selectedIcons > div:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(135,200,110,0.25);
+    z-index: 3;
+    transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s;
+}
+        .cat1 { background: #d3d3f7; }
+        .cat2 { background: #b7e6e0; }
+        .cat3 { background: #cde7e7; }
+        .cat4 { background: #f7d3d3; }
+        .choose-text {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #222;
+            letter-spacing: 0.01em;
+        }
+
+        /* Clouds */
+        .cloud {
+            position: absolute;
+            background: #e3efe3;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        .cloud1 {
+            width: 120px; height: 48px;
+            left: 24px; top: 180px;
+        }
+        .cloud2 {
+            width: 90px; height: 36px;
+            right: 24px; bottom: 80px;
+        }
+        /* Rounded corners for mobile look */
+        body, html {
+            border-radius: 28px;
+        }
+        .expand-section {
+            animation: expandSection 0.4s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform: scaleY(1.04);
+        }
+        @keyframes expandSection {
+            0% {
+                opacity: 0;
+                transform: scaleY(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scaleY(1.04);
+            }
+        }
+        /* Morph animation for activity-categories */
+        .morph-out {
+            animation: morphOut 0.4s forwards cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        @keyframes morphOut {
+            0% { opacity: 1; transform: scale(1);}
+            100% { opacity: 0; transform: scale(0.9);}
+        }
+        .morph-in {
+            animation: morphIn 0.4s forwards cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        @keyframes morphIn {
+            0% { opacity: 0; transform: scale(0.9);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+        /* Slider animation for sections */
+        .slide-in {
+            animation: slideInLeft 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform: translateX(0);
+        }
+        @keyframes slideInLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        /* Desktop/Laptop Layout Improvements */
+        @media (min-width: 700px) {
+            body, html {
+                border-radius: 32px;
+                background: #eaf6e3;
+                min-height: 100vh;
+            }
+            .header,
+            .activity-categories,
+            .choose-text,
+            .activity-section,
+            #selected-activities {
+                max-width: 420px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .header {
+                padding-top: 48px;
+                padding-bottom: 0;
+            }
+            .activity-categories {
+                margin-top: 48px;
+            }
+            .choose-text {
+                margin-top: 36px;
+                font-size: 1.25rem;
+            }
+            .category-box {
+                padding: 24px 24px;
+                gap: 32px;
+            }
+            .category-icon,
+            .subcat,
+            .energy-subcat,
+            .food-subcat {
+                width: 72px !important;
+                height: 72px !important;
+                font-size: 2.2rem;
+            }
+            .category-icon img,
+            .subcat img,
+            .energy-subcat img,
+            .food-subcat img {
+                width: 64px !important;
+                height: 64px !important;
+            }
+            .activity-section {
+                top: calc(48px + 72px + 36px);
+                width: 420px !important;
+            }
+            #selected-activities {
+                min-width: 420px;
+                max-width: 420px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 24px 24px 0 0;
+                padding: 20px 36px;
+                font-size: 1.1rem;
+            }
+            .expand-section {
+                transform: scaleY(1.02);
+            }
+        }
+
+        .achievement-dropdown-menu {
+    display: none; /* Initially hidden */
+    position: absolute;
+    top: 110%; /* Position below the button */
+    right: 0;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    overflow: hidden;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    visibility: hidden;
+    transition: all 0.2s ease-in-out;
+}
+
+.achievement-dropdown-menu.active {
+    display: block; /* Show the dropdown */
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.achievement-dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #444;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.achievement-dropdown-menu .dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.achievement-dropdown-menu .dropdown-item svg {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+}
+        /* Optional: Give the background a subtle color on desktop */
+        @media (min-width: 700px) {
+            body {
+                background: linear-gradient(120deg, #eaf6e3 60%, #b7e6e0 100%);
+            }
+        }
+        .main-app-container {
+            width: 100vw;
+            min-height: 100vh;
+            max-width: none;
+            margin: 0;
+            background: #f8fff7;
+            border-radius: 0;
+            box-shadow: none;
+            padding-bottom: 120px; /* for bottom bar */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 900px) {
+            body {
+                background: linear-gradient(120deg, #eaf6e3 60%, #b7e6e0 100%);
+            }
+            .main-app-container {
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                width: 100vw !important;
+                min-height: 100vh !important;
+            }
+            .header,
+            .activity-categories,
+            .choose-text,
+            .activity-section,
+            #selected-activities {
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            .category-box {
+                max-width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 32px;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                justify-content: center !important;
+            }
+            .activity-section {
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 480px !important;
+                max-width: 90vw;
+                margin: 0 auto !important;
+                position: absolute;
+                right: auto !important;
+            }
+            .selected-activities-bar {
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 480px !important;
+                max-width: 90vw;
+                margin: 0 auto !important;
+                right: auto !important;
+            }
+            .choose-text, .header-title {
+                text-align: center !important;
+                width: 100%;
+                display: block;
+            }
+            .header {
+                justify-content: center !important;
+            }
+        }
+
+        .selected-activities-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.07);
+            border-radius: 18px 18px 0 0;
+            padding: 12px 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            min-height: 64px;
+            z-index: 100;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 700px) {
+            .main-app-container {
+                position: relative;
+                max-width: 540px;
+                margin: 48px auto 0 auto;
+            }
+            .selected-activities-bar {
+                max-width: 540px;
+                margin-left: auto;
+                margin-right: auto;
+                left: 0;
+                right: 0;
+            }
+        }
+
+        /* Optional: Give the background a subtle color on desktop */
+        @media (min-width: 700px) {
+            body {
+                background: linear-gradient(120deg, #eaf6e3 60%, #b7e6e0 100%);
+            }
+        }
+        .main-app-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 40px auto 0 auto;
+            background: #f8fff7;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            min-height: 80vh;
+            padding-bottom: 120px; /* for bottom bar */
+            position: relative;
+        }
+
+        @media (min-width: 900px) {
+            body {
+                background: linear-gradient(120deg, #eaf6e3 60%, #b7e6e0 100%);
+            }
+            .main-app-container {
+                max-width: 540px;
+                margin-top: 48px;
+                padding-bottom: 140px;
+                padding: 32px 0 140px 0;
+            }
+            .header,
+            .activity-categories,
+            .choose-text,
+            .activity-section,
+            #selected-activities {
+                max-width: 540px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .category-box {
+                max-width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 32px;
+            }
+        }
+
+        .activity-categories,
+        .activity-section {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        /* Dark Theme Styles */
+        body.dark-theme, html.dark-theme {
+            background: linear-gradient(120deg, #181c1a 60%, #232b23 100%) !important;
+            color: #e0e0e0;
+        }
+        .dark-theme .main-app-container {
+            background: #23272f !important;
+            border: none;
+            box-shadow: none;
+        }
+        .dark-theme .category-box,
+        .dark-theme .activity-section form,
+        .dark-theme .selected-activities-bar {
+            background: #23272f !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25) !important;
+            color: #e0e0e0 !important;
+        }
+        .dark-theme .category-icon,
+        .dark-theme .subcat,
+        .dark-theme .energy-subcat,
+        .dark-theme .food-subcat {
+            background: #23272f !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.22) !important;
+        }
+        .dark-theme .header-title,
+        .dark-theme .choose-text {
+            color: #8be78b !important;
+        }
+        .dark-theme label,
+        .dark-theme input,
+        .dark-theme button,
+        .dark-theme .icon-btn {
+            color: #e0e0e0 !important;
+        }
+        .dark-theme input,
+        .dark-theme select {
+            background: #181c1a !important;
+            color: #e0e0e0 !important;
+            border: 1px solid #333 !important;
+        }
+        .dark-theme .selected-activities-bar {
+            background: #23272f !important;
+        }
+        .dark-theme #updateBtn {
+            background: #6BBD6E !important;
+            color: #fff !important;
+        }
+        .dark-theme .cloud {
+            background: #223322 !important;
+            opacity: 0.18 !important;
+        }
+        .dark-theme .header-icons svg,
+        .dark-theme .header-left svg {
+            filter: brightness(1.2) saturate(1.2);
+        }
+        body.dark-theme .achievement-dropdown-menu {
+    background-color: #222222;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .achievement-dropdown-menu .dropdown-item {
+    color: #dadada;
+}
+
+body.dark-theme .achievement-dropdown-menu .dropdown-item:hover {
+    background-color: #2a2a2a;
+}
+        /* Theme switch styles */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .theme-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .theme-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .theme-switch input:checked + .slider {
+            background-color: #6BBD6E;
+        }
+        .theme-switch input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        /* Add this at the end of your <style> section */
+        @media (min-width: 900px) {
+  body::before, body::after {
+    content: "";
+    position: fixed;
+    z-index: 0;
+    pointer-events: none;
+    width: 220px;
+    height: 120px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'%3E%3Cpath d='M25,50 Q10,50 10,37.5 Q10,25 22.5,25 Q22.5,10 40,10 Q57.5,10 57.5,25 Q70,25 75,32.5 Q80,40 72.5,45 Q65,50 25,50 Z' fill='%23ffffff' opacity='0.7'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+    animation: floatClouds 18s ease-in-out infinite alternate;
+  }
+  body::before {
+    top: 8vh;
+    left: 8vw;
+    animation-delay: 0s;
+  }
+  body::after {
+    bottom: 10vh;
+    right: 10vw;
+    width: 300px;
+    height: 160px;
+    opacity: 0.5;
+    animation-delay: 6s;
+  }
+  @keyframes floatClouds {
+    0%   { transform: translateY(0px) scale(1);}
+    50%  { transform: translateY(-30px) scale(1.05);}
+    100% { transform: translateY(0px) scale(1);}
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="main-app-container">
+        <div class="header">
+            <div class="header-left">
+                <a href="main.html">
+                <button class="icon-btn" aria-label="Home">
+                    <!-- Home icon SVG -->
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+                        <path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-5h-6v5H4a1 1 0 0 1-1-1V10.5z" stroke="#6bb13f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                </a>
+            </div>
+            <div class="header-title">Add activity</div>
+            <div class="header-icons">
+                <button class="icon-btn" aria-label="Achievements">
+                    <!-- Medal/ribbon icon SVG -->
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4" stroke="#e6c200" stroke-width="2"/>
+                        <path d="M8 14l-2 6 6-3 6 3-2-6" stroke="#e6c200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="achievement-dropdown-container" style="position: relative;">
+    <button class="icon-btn" id="achievementToggle" aria-label="Settings">
+        <!-- Hexagon/settings icon SVG -->
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+            <polygon points="12,2 22,7 22,17 12,22 2,17 2,7" stroke="#6bb13f" stroke-width="2" fill="none"/>
+            <circle cx="12" cy="12" r="3" stroke="#6bb13f" stroke-width="2"/>
+        </svg>
+    </button>
+    <div class="achievement-dropdown-menu" id="achievementDropdown">
+        <div class="dropdown-item" data-action="achievements">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#FFD700" d="M17 3V2a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v1H2v3a5 5 0 0 0 5 5h.17A5.98 5.98 0 0 0 11 16.92V19H8v2h8v-2h-3v-2.08A5.98 5.98 0 0 0 16.83 11H17a5 5 0 0 0 5-5V3h-5zm-9 5a3 3 0 0 1-3-3V5h3v3zm13-3a3 3 0 0 1-3 3V5h3v1z"/>
+            </svg>
+            <span>Achievements</span>
+        </div>
+        <div class="dropdown-item" data-action="profile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4CAF50" d="M12 12c2.7 0 8 1.34 8 4v2H4v-2c0-2.66 5.3-4 8-4zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+            </svg>
+            <span>Profile</span>
+        </div>
+        <div class="dropdown-item" data-action="logout">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#E57373" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+            </svg>
+            <span>Logout</span>
+        </div>
+    </div>
+</div>
+
+                <!-- Theme Toggle Switch -->
+                <label class="theme-switch" for="theme-toggle" style="margin-left:16px;">
+                    <input type="checkbox" id="theme-toggle" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="activity-categories" id="activity-categories">
+            <div class="category-box">
+                <div class="category-icon cat1" title="Transport" onclick="showSection('transport')">
+                    <!-- Car icon SVG -->
+                    <img src="images\carm.svg" width="70" height="70" alt="Walk"/>
+
+                </div>
+                <div class="category-icon cat2" title="Energy" onclick="showSection('energy')">
+                    <!-- Lightning/energy icon SVG -->
+                    <img src="images\elecM.svg" width="70" height="70" alt="Walk"/>
+
+                </div>
+                <div class="category-icon cat4" title="Food" onclick="showSection('food')">
+                    <!-- Food/meal icon SVG -->
+                    <img src="images\foodM.svg" width="70" height="70" alt="Walk"/>
+
+                </div>
+            </div>
+        </div>
+        <div class="choose-text">Chose your activity category</div>
+
+          <!-- Transport Section (Subcategories) -->
+        <div id="transport-section" class="activity-section" style="display:none;">
+            <div class="category-box">
+                <div class="subcat" data-subcat="walk" data-factor="0" title="Walk" style="background:#d3f7d3; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Walk SVG -->
+                    <img src="images\walk.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+                <div class="subcat" data-subcat="plane" data-factor="0.133" title="Plane" style="background:#d3e7f7; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Plane SVG -->
+                    <img src="images\plane.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+                <div class="subcat" data-subcat="car" data-factor="0.192" title="Car" style="background:#d3f7d3; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Car SVG -->
+                    <img src="images\car.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+                <div class="subcat" data-subcat="bike" data-factor="0.021" title="Bike" style="background:#b7e6e0; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Bike SVG -->
+                    <img src="images\bike.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+                <div class="subcat" data-subcat="cycle" data-factor="0.016" title="Cycle" style="background:#cde7e7; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Cycle SVG -->
+                      <img src="images\cycle.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Subcategory Form Section (Step 3 & 4) -->
+        <div id="subcategory-form-section" class="activity-section" style="display:none;">
+            <form id="activityForm" style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; display:flex; flex-direction:column; align-items:center;">
+                <div id="selectedSubcatIcon" style="margin-bottom:16px;"></div>
+                <input type="hidden" name="subcategory" id="subcategoryInput">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" min="1" required style="margin-bottom:16px;">
+                <button type="submit" style="padding:8px 24px; background:#6bb13f; color:#fff; border:none; border-radius:8px; font-weight:700;">Submit</button>
+            </form>
+        </div>
+
+        <!-- Energy Section -->
+        <div id="energy-section" class="activity-section" style="display:none;">
+            <div class="category-box">
+                <div class="energy-subcat" data-subcat="electricity" style="background:#b7e6e0; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Electricity SVG -->
+                    <img src="images\electric.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+                <div class="energy-subcat" data-subcat="natural_gas" style="background:#b7e6e0; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Natural Gas SVG -->
+                    <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+                        <rect x="6" y="10" width="12" height="8" rx="2" stroke="#4bb1b1" stroke-width="2"/>
+                        <path d="M12 2v4M4 12h4M16 12h4M12 18v4" stroke="#4bb1b1" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="energy-subcat" data-subcat="solar" style="background:#b7e6e0; border-radius:50%; width:48px; height:48px; display:flex; align-items: center; justify-content: center; cursor:pointer;">
+                    <!-- Solar SVG -->
+                    <img src="images\solar.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Food Section -->
+        <div id="food-section" class="activity-section" style="display:none;">
+            <div class="category-box">
+                <div class="food-subcat" data-subcat="vegan" data-factor="1.5" title="Vegan Diet" style="background:#d3f7d3; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Vegan SVG -->
+                     <img src="images\vegan.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+                <div class="food-subcat" data-subcat="meat" data-factor="7.0" title="Meat Diet" style="background:#f7d3d3; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Meat SVG -->
+                    <img src="images\meat.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+                <div class="food-subcat" data-subcat="balanced" data-factor="4.0" title="Balanced Diet" style="background:#f7f3d3; border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <!-- Balanced SVG -->
+                    <img src="images\balance.svg" width="60" height="60" alt="Walk"/>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Energy Subcategory Form Section -->
+        <div id="energy-form-section" class="activity-section" style="display:none;">
+            <form id="energyForm" style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; display:flex; flex-direction:column; align-items:center;">
+                <div id="selectedEnergyIcon" style="margin-bottom:16px;"></div>
+                <input type="hidden" name="energySubcategory" id="energySubcategoryInput">
+                <label for="energyAmount">Amount (kWh):</label>
+                <input type="number" id="energyAmount" name="energyAmount" min="1" required style="margin-bottom:16px;">
+                <button type="submit" style="padding:8px 24px; background:#4bb1b1; color:#fff; border:none; border-radius:8px; font-weight:700;">Submit</button>
+            </form>
+        </div>
+
+        <!-- Food Subcategory Form Section -->
+        <div id="food-form-section" class="activity-section" style="display:none;">
+            <form id="foodForm" style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; display:flex; flex-direction:column; align-items:center;">
+                <div id="selectedFoodIcon" style="margin-bottom:16px;"></div>
+                <input type="hidden" name="foodSubcategory" id="foodSubcategoryInput">
+                <label for="foodAmount">Amount:</label>
+                <input type="number" id="foodAmount" name="foodAmount" min="1" required style="margin-bottom:16px;">
+                <button type="submit" style="padding:8px 24px; background:#e66b6b; color:#fff; border:none; border-radius:8px; font-weight:700;">Submit</button>
+            </form>
+        </div>
+
+        <!-- Plane Form Section -->
+        <div id="plane-form-section" class="activity-section" style="display:none;">
+            <form id="planeForm" style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; display:flex; flex-direction:column; align-items:center;">
+                <div id="selectedPlaneIcon" style="margin-bottom:16px;"></div>
+                <label for="fromLocation">From:</label>
+                <input type="text" id="fromLocation" name="fromLocation" required style="margin-bottom:8px;">
+                <label for="toLocation">To:</label>
+                <input type="text" id="toLocation" name="toLocation" required style="margin-bottom:8px;">
+                <label for="planeDistance">Distance (km):</label>
+                <input type="number" id="planeDistance" name="planeDistance" min="1" required style="margin-bottom:16px;">
+                <button type="submit" style="padding:8px 24px; background:#2196f3; color:#fff; border:none; border-radius:8px; font-weight:700;">Confirm</button>
+            </form>
+        </div>
+
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+
+        <style>
+            .activity-section {
+                position: absolute;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+                top: calc(32px + 56px + 24px); /* Same as .activity-categories margin-top + header height */
+                z-index: 10;
+                width: calc(100% - 32px);
+            }
+            @media (max-width: 480px) {
+                .activity-section {
+                    width: calc(100% - 32px);
+                }
+            }
+            .slide-in {
+                animation: slideInLeft 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+                transform: translateX(0);
+            }
+            @keyframes slideInLeft {
+                0% {
+                    opacity: 0;
+                    transform: translateX(-100%);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+        </style>
+
+        <!-- Bottom Section to store selected activities -->
+        <div id="selected-activities" class="selected-activities-bar">
+            <span style="font-weight:600; color:#6bb13f;">Selected:</span>
+            <div id="selectedIcons" style="display:flex; gap:12px;"></div>
+            <button id="updateBtn" style="margin-left:auto; padding:8px 20px; background:#6bb13f; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; display:none;">Update</button>
+        </div>
+
+        <script>
+            function showSection(section) {
+                // Morph out the categories
+                var cat = document.querySelector('.activity-categories');
+                if (cat) {
+                    cat.classList.add('morph-out');
+                    setTimeout(function() {
+                        cat.style.display = 'none';
+                    }, 400);
+                }
+                // Hide all sections and remove animation classes
+                ['transport', 'energy', 'food', 'subcategory-form'].forEach(function(sec) {
+                    var el = document.getElementById(sec + '-section');
+                    if (el) {
+                        el.style.display = 'none';
+                        el.classList.remove('slide-in');
+                    }
+                });
+                // Show and animate the selected section
+                var selected = document.getElementById(section + '-section');
+                if (selected) {
+                    selected.style.display = 'block';
+                    void selected.offsetWidth;
+                    selected.classList.add('slide-in');
+                }
+            }
+
+            // Store selected activities in an array
+            let selectedActivities = [];
+
+            // Step 2: Handle subcategory click for Transport
+            // Handle subcategory click for Transport (walk, car, bike, cycle, plane)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#transport-section .subcat').forEach(function(el) {
+        el.addEventListener('click', function() {
+            const subcat = el.getAttribute('data-subcat');
+            if (subcat === 'plane') {
+                // Plane: show plane form
+                document.getElementById('transport-section').style.display = 'none';
+                var formSection = document.getElementById('plane-form-section');
+                formSection.style.display = 'block';
+                void formSection.offsetWidth;
+                formSection.classList.add('slide-in');
+                document.getElementById('selectedPlaneIcon').innerHTML = el.innerHTML;
+                document.getElementById('selectedPlaneIcon').setAttribute('data-svg', el.innerHTML);
+            } else {
+                // For walk, car, bike, cycle: show distance input form
+                document.getElementById('transport-section').style.display = 'none';
+                var formSection = document.getElementById('subcategory-form-section');
+                formSection.style.display = 'block';
+                void formSection.offsetWidth;
+                formSection.classList.add('slide-in');
+                document.getElementById('selectedSubcatIcon').innerHTML = el.innerHTML;
+                document.getElementById('subcategoryInput').value = subcat;
+                document.getElementById('selectedSubcatIcon').setAttribute('data-svg', el.innerHTML);
+                // Set emission factor for calculation
+                document.getElementById('subcategoryInput').setAttribute('data-factor', el.getAttribute('data-factor'));
+            }
+        });
+    });
+
+    // Energy
+    document.querySelectorAll('#energy-section .energy-subcat').forEach(function(el) {
+        el.addEventListener('click', function() {
+            document.getElementById('energy-section').style.display = 'none';
+            var formSection = document.getElementById('energy-form-section');
+            formSection.style.display = 'block';
+            void formSection.offsetWidth;
+            formSection.classList.add('slide-in');
+            document.getElementById('selectedEnergyIcon').innerHTML = el.innerHTML;
+            document.getElementById('energySubcategoryInput').value = el.getAttribute('data-subcat');
+            document.getElementById('selectedEnergyIcon').setAttribute('data-svg', el.innerHTML);
+        });
+    });
+
+    // Food
+    document.querySelectorAll('#food-section .food-subcat').forEach(function(el) {
+        el.addEventListener('click', function() {
+            const subcategory = el.getAttribute('data-subcat');
+            const factor = el.getAttribute('data-factor');
+            const iconSVG = el.innerHTML;
+            // Store diet as activity and the factor as amount (per day)
+            selectedActivities.push({ 
+                category: "food",
+                subcategory, 
+                amount: factor, 
+                iconSVG 
+            });
+            renderSelectedActivities();
+            document.getElementById('food-section').style.display = 'none';
+            var cat = document.querySelector('.activity-categories');
+            if (cat) {
+                cat.style.display = 'flex';
+                cat.classList.remove('morph-out');
+                cat.style.opacity = 0;
+                setTimeout(() => { cat.style.opacity = 1; }, 10);
+            }
+        });
+    });
+
+    // Transport form submit
+    document.getElementById('activityForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const subcategory = document.getElementById('subcategoryInput').value;
+        const distance = document.getElementById('amount').value;
+        const factor = document.getElementById('subcategoryInput').getAttribute('data-factor') || 0;
+        const iconSVG = document.getElementById('selectedSubcatIcon').getAttribute('data-svg');
+        const emission = (parseFloat(distance) * parseFloat(factor)).toFixed(2);
+        // Store both emission and distance so backend can reconstruct
+        selectedActivities.push({
+            category: "transport",
+            subcategory,
+            amount: emission,
+            distance: distance,
+            factor: factor,
+            iconSVG
+        });
+        renderSelectedActivities();
+        document.getElementById('subcategory-form-section').style.display = 'none';
+        this.reset();
+        var cat = document.querySelector('.activity-categories');
+        if (cat) {
+            cat.style.display = 'flex';
+            cat.classList.remove('morph-out');
+            cat.style.opacity = 0;
+            setTimeout(() => { cat.style.opacity = 1; }, 10);
+        }
+    });
+
+    // Energy form submit
+    document.getElementById('energyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const subcategory = document.getElementById('energySubcategoryInput').value;
+        const amount = document.getElementById('energyAmount').value;
+        const iconSVG = document.getElementById('selectedEnergyIcon').getAttribute('data-svg');
+        selectedActivities.push({
+            category: "energy",
+            subcategory,
+            amount,
+            iconSVG
+        });
+        renderSelectedActivities();
+        document.getElementById('energy-form-section').style.display = 'none';
+        this.reset();
+        var cat = document.querySelector('.activity-categories');
+        if (cat) {
+            cat.style.display = 'flex';
+            cat.classList.remove('morph-out');
+            cat.style.opacity = 0;
+            setTimeout(() => { cat.style.opacity = 1; }, 10);
+        }
+    });
+
+    // Food form submit (for custom entry, if needed)
+    document.getElementById('foodForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const subcategory = document.getElementById('foodSubcategoryInput').value;
+        const amount = document.getElementById('foodAmount').value;
+        const iconSVG = document.getElementById('selectedFoodIcon').getAttribute('data-svg');
+        selectedActivities.push({
+            category: "food",
+            subcategory,
+            amount,
+            iconSVG
+        });
+        renderSelectedActivities();
+        document.getElementById('food-form-section').style.display = 'none';
+        this.reset();
+        var cat = document.querySelector('.activity-categories');
+        if (cat) {
+            cat.style.display = 'flex';
+            cat.classList.remove('morph-out');
+            cat.style.opacity = 0;
+            setTimeout(() => { cat.style.opacity = 1; }, 10);
+        }
+    });
+
+    // Plane form submit
+    document.getElementById('planeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const from = document.getElementById('fromLocation').value;
+        const to = document.getElementById('toLocation').value;
+        const distance = document.getElementById('planeDistance').value;
+        const factor = 0.133; // Plane emission factor per km per passenger
+        const emission = (parseFloat(distance) * factor).toFixed(2);
+        const iconSVG = document.getElementById('selectedPlaneIcon').getAttribute('data-svg');
+        selectedActivities.push({
+            category: "transport",
+            subcategory: `plane (${from}→${to})`,
+            amount: emission,
+            distance: distance,
+            factor: factor,
+            from,
+            to,
+            iconSVG
+        });
+        renderSelectedActivities();
+        document.getElementById('plane-form-section').style.display = 'none';
+        this.reset();
+        var cat = document.querySelector('.activity-categories');
+        if (cat) {
+            cat.style.display = 'flex';
+            cat.classList.remove('morph-out');
+            cat.style.opacity = 0;
+            setTimeout(() => { cat.style.opacity = 1; }, 10);
+        }
+    });
+
+    // Update button click (send all activities to backend)
+    document.getElementById('updateBtn').addEventListener('click', function() {
+    fetch('store_emissions.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedActivities)
+    })
+    .then(res => res.json())
+    .then (data => {
+        alert('Emissions successfully recorded!');
+        selectedActivities = [];
+        renderSelectedActivities();
+        window.location.href = 'what.html';
+    })
+    .catch(err => {
+        alert('Error updating to backend!');
+    });
+});
+});
+
+function renderSelectedActivities() {
+    const iconsDiv = document.getElementById('selectedIcons');
+    iconsDiv.innerHTML = '';
+    selectedActivities.forEach(item => {
+        const iconWrap = document.createElement('div');
+        iconWrap.innerHTML = item.iconSVG;
+        iconWrap.title = item.subcategory + ' (' + item.amount + ')';
+        iconWrap.style.width = '40px';
+        iconWrap.style.height = '40px';
+        iconWrap.style.display = 'flex';
+        iconWrap.style.alignItems = 'center';
+        iconWrap.style.justifyContent = 'center';
+        iconsDiv.appendChild(iconWrap);
+    });
+    // Show update button if there is at least one activity
+    document.getElementById('updateBtn').style.display = selectedActivities.length ? 'inline-block' : 'none';
+}
+
+// Theme toggle logic...
+document.getElementById('theme-toggle').addEventListener('change', function() {
+    document.body.classList.toggle('dark-theme', this.checked);
+    localStorage.setItem('darkTheme', this.checked ? '1' : '');
+});
+window.addEventListener('DOMContentLoaded', function() {
+    if(localStorage.getItem('darkTheme') === '1') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('theme-toggle').checked = true;
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const achievementToggle = document.getElementById('achievementToggle');
+    const achievementDropdown = document.getElementById('achievementDropdown');
+
+    // Toggle dropdown when clicking the button
+    achievementToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        achievementDropdown.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!achievementDropdown.contains(e.target) && !achievementToggle.contains(e.target)) {
+            achievementDropdown.classList.remove('active');
+        }
+    });
+
+    // Handle dropdown item actions
+    achievementDropdown.querySelectorAll('.dropdown-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            const action = item.getAttribute('data-action');
+            if (action === 'logout') {
+                // Redirect to logout.php
+                window.location.href = 'logout.php';
+            } else if (action === 'profile') {
+                window.location.href = 'kya.html';
+            } else if (action === 'achievements') {
+                window.location.href = 'achievements.html';
+            }
+        });
+    });
+});
+        </script>
+    </div>
+</body>
+</html>

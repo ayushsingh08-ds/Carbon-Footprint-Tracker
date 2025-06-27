@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Register</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .split-container {
+      display: flex;
+      width: 80%;
+      height: 80%;
+      background: #fff;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .left-panel, .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .left-panel {
+      position: relative;
+      background: linear-gradient(135deg, #4CAF50, #08770c); /* Green gradient for eco-friendly theme */
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .left-panel .logo {
+      font-size: 2.5rem; /* Slightly larger font size */
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .left-panel .description {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 0; /* Remove extra margin */
+    }
+
+    .right-panel {
+      background: #fff;
+      color: #2E2E2E;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .video-placeholder {
+      width: 80%;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .video-placeholder:hover {
+      background: rgba(255, 255, 255, 0.3); /* Slight hover effect */
+    }
+
+    .container {
+      width: 100%;
+      max-width: 370px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    select {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid #ddd;
+      outline: none;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      color: #2E2E2E;
+      font-size: 16px;
+    }
+
+    input[type="submit"] {
+      background: #08770c;
+      border: none;
+      padding: 12px;
+      margin-top: 20px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background: #37813b;
+    }
+
+    .link {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Toggle Switch */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 60px;
+      height: 30px;
+      background: #3f9142;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 5px;
+      transition: background 0.3s ease, justify-content 0.3s ease;
+    }
+
+    .theme-toggle .circle {
+      width: 24px;
+      height: 24px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+
+    body.light-theme .theme-toggle {
+      background: #027e06;
+      justify-content: flex-start;
+    }
+
+    body.dark-theme .theme-toggle {
+      background: #2A2935;
+      justify-content: flex-end;
+    }
+
+    /* Light Theme */
+    .light-theme {
+      background: #39a362;
+      color: #2E2E2E;
+    }
+
+   /* Dark Theme */
+   .dark-theme {
+      background: #2A2935;
+      color: #CBB39D;
+    }
+
+    .dark-theme .split-container {
+      background: #473B44;
+      color: #CBB39D;
+    }
+
+    .dark-theme .left-panel {
+      background: linear-gradient(135deg, #473B44, #2A2935);
+      color: #CBB39D;
+    }
+
+    .dark-theme .right-panel {
+      background: #2A2935;
+      color: #CBB39D;
+    }
+
+    .dark-theme input[type="text"],
+    .dark-theme input[type="password"],
+    .dark-theme input[type="email"],
+    .dark-theme select {
+      background: rgba(255, 255, 255, 0.1);
+      color: #CBB39D;
+    }
+
+    .dark-theme input::placeholder {
+      color: #98877D;
+    }
+
+    .dark-theme select option {
+      background: #2A2935;
+      color: #CBB39D;
+    }
+
+    .dark-theme input[type="submit"] {
+      background: #756D81;
+      color: #fff;
+    }
+
+    .dark-theme input[type="submit"]:hover {
+      background: #5E5569;
+    }
+
+    .dark-theme .link a {
+      color: #CBB39D;
+    }
+
+    .dark-theme .video-placeholder {
+      background: rgba(255, 255, 255, 0.1);
+      color: #CBB39D;
+    }
+
+    .dark-theme .theme-toggle {
+      color: #CBB39D;
+    }
+
+    /* General Styles for Smaller Screens */
+@media (max-width: 1024px) {
+  .split-container {
+    flex-direction: column; /* Stack panels vertically */
+    height: auto; /* Allow height to adjust dynamically */
+    width: 90%; /* Reduce width for smaller screens */
+  }
+
+  .left-panel, .right-panel {
+    flex: none; /* Remove flex-grow */
+    width: 100%; /* Make panels take full width */
+    padding: 20px; /* Reduce padding */
+  }
+
+  .left-panel {
+    text-align: center; /* Center-align content */
+  }
+
+  .left-panel .logo {
+    font-size: 2rem; /* Adjust logo size for smaller screens */
+  }
+
+  .left-panel .description {
+    font-size: 1rem; /* Adjust description font size */
+  }
+}
+
+/* Styles for Mobile Screens (max-width: 768px) */
+@media (max-width: 768px) {
+  .split-container {
+    width: 100%; /* Use full width for mobile */
+    height: auto; /* Allow height to adjust dynamically */
+    border-radius: 10px; /* Reduce border radius */
+    box-shadow: none; /* Remove shadow for simplicity */
+  }
+
+  .left-panel {
+    padding: 10px; /* Reduce padding */
+  }
+
+  .left-panel .logo {
+    font-size: 1.8rem; /* Further reduce logo size */
+  }
+
+  .left-panel .description {
+    font-size: 0.9rem; /* Further reduce description font size */
+  }
+
+  .right-panel {
+    padding: 10px; /* Reduce padding */
+  }
+
+  h2 {
+    font-size: 1.5rem; /* Adjust heading size */
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  select {
+    font-size: 14px; /* Adjust input font size */
+    padding: 10px; /* Adjust padding */
+  }
+
+  input[type="submit"] {
+    font-size: 16px; /* Adjust button font size */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .link {
+    font-size: 12px; /* Adjust link font size */
+  }
+
+  .theme-toggle {
+    width: 50px; /* Reduce toggle size */
+    height: 25px;
+  }
+
+  .theme-toggle .circle {
+    width: 20px; /* Adjust toggle circle size */
+    height: 20px;
+  }
+}
+
+/* Styles for Extra Small Screens (max-width: 480px) */
+@media (max-width: 480px) {
+  .split-container {
+    padding: 10px; /* Add padding inside the container */
+  }
+
+  .left-panel .logo {
+    font-size: 1.5rem; /* Further reduce logo size */
+  }
+
+  .left-panel .description {
+    font-size: 0.8rem; /* Further reduce description font size */
+  }
+
+  .right-panel {
+    padding: 10px; /* Reduce padding */
+  }
+
+  h2 {
+    font-size: 1.2rem; /* Reduce heading size */
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  select {
+    font-size: 12px; /* Further reduce input font size */
+    padding: 8px; /* Adjust padding */
+  }
+
+  input[type="submit"] {
+    font-size: 14px; /* Adjust button font size */
+    padding: 8px; /* Adjust padding */
+  }
+
+  .link {
+    font-size: 10px; /* Further reduce link font size */
+  }
+
+  .theme-toggle {
+    width: 40px; /* Further reduce toggle size */
+    height: 20px;
+  }
+
+  .theme-toggle .circle {
+    width: 16px; /* Adjust toggle circle size */
+    height: 16px;
+  }
+}
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleButton = document.getElementById("themeToggle");
+  const body = document.body;
+
+  // Helper function to set a cookie
+  function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString(); // Set expiration date
+    document.cookie = `${name}=${value}; expires=${expires}; path=/`; // Set cookie with path
+  }
+
+  // Helper function to get a cookie
+  function getCookie(name) {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+      const [key, value] = cookie.split('=');
+      if (key === name) return value;
+    }
+    return null;
+  }
+
+  // Check and apply saved theme preference from cookies
+  const savedTheme = getCookie('theme');
+  if (savedTheme) {
+    body.classList.add(savedTheme);
+  } else {
+    body.classList.add('light-theme'); // Default theme
+  }
+
+  // Toggle theme and save preference to cookie
+  toggleButton.addEventListener("click", function () {
+    if (body.classList.contains("dark-theme")) {
+      body.classList.remove("dark-theme");
+      body.classList.add("light-theme");
+      setCookie('theme', 'light-theme', 30); // Save preference to cookie for 30 days
+    } else {
+      body.classList.remove("light-theme");
+      body.classList.add("dark-theme");
+      setCookie('theme', 'dark-theme', 30); // Save preference to cookie for 30 days
+    }
+  });
+
+      const stateDropdown = document.getElementById("state");
+      const indianStates = [
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
+        "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+        "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan",
+        "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+        "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+        "Lakshadweep", "Delhi", "Puducherry"
+      ];
+
+      // Populate the state dropdown
+      indianStates.forEach(state => {
+        const option = document.createElement("option");
+        option.value = state;
+        option.textContent = state;
+        stateDropdown.appendChild(option);
+      });
+    });
+
+    function showRegister() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.remove('hidden');
+    }
+
+    function showLogin() {
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('loginForm').classList.remove('hidden');
+    }
+  </script>
+</head>
+
+<body class="light-theme">
+  <div class="theme-toggle" id="themeToggle">
+    <div class="circle"></div>
+  </div>
+  <div class="split-container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <div class="logo">Track Your Carbon Footprint</div>
+      <div class="description">
+        Monitor your carbon emissions and take steps to reduce your impact on the environment.
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <!-- Login form -->
+      <div class="container" id="loginForm">
+        <h2>Sign In</h2>
+        <form action="login.php" method="POST">
+          <input type="text" name="username" placeholder="Username" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <input type="submit" value="Login">
+        </form>
+        <div class="link">
+          <a href="#">Forgot Password?</a>
+          <br>
+          Don't have an account? <a onclick="showRegister()">Register Here</a>
+        </div>
+      </div>
+
+      <!-- Register form -->
+      <div class="container hidden" id="registerForm">
+        <h2>Sign Up</h2>
+        <form action="register.php" method="POST">
+          <input type="text" name="username" placeholder="Username" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <!-- State Dropdown -->
+          <select id="state" name="state_id" required>
+            <option value="" disabled selected>Select a state</option>
+          </select>
+          <input type="submit" value="Register">
+        </form>
+        <div class="link">
+          Already have an account? <a onclick="showLogin()">Login Here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile | Carbon Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Default Light Theme */
+        body {
+            --background-color: #f6f7fa;
+            --text-color: #444;
+            --card-background: #fff;
+            --button-background: #6bb13f;
+            --button-text-color: #fff;
+            --border-color: #e0e0e0;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f6f7fa;
+        }
+
+        /* Dark Theme */
+        body[data-theme="dark"] {
+            --background-color: #121212;
+            --text-color: #e0e0e0;
+            --card-background: #1e1e1e;
+            --button-background: #4caf50;
+            --button-text-color: #fff;
+            --border-color: #333;
+        }
+
+        /* Apply Variables */
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--background-color);
+        }
+
+        .sidebar {
+            background-color: var(--card-background);
+            color: var(--text-color);
+            width: 220px;
+            padding: 32px 0 0 0;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #eaeaea;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #b7e6e0;
+        }
+
+        .sidebar-menu {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu button {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 14px 32px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: background 0.15s;
+        }
+
+        .sidebar-menu button.active,
+        .sidebar-menu button:hover {
+            background: var(--button-background);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            color: #e66b6b !important;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--background-color);
+        }
+
+        .profile-form,
+        .settings-section,
+        .record-section {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            padding: 32px 28px;
+            min-width: 320px;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .profile-form input,
+        .settings-section input,
+        .settings-section select {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 18px;
+            font-size: 1rem;
+        }
+
+        .profile-form label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .profile-form .save-btn {
+            background: #6bb13f;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            width: 100%;
+            font-size: 1.08rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            padding: 24px;
+            margin: 16px auto;
+            max-width: 400px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .profile-section h3 {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .profile-section .profile-details p {
+            font-size: 1rem;
+            margin: 8px 0;
+            color: var(--text-color);
+        }
+
+        .profile-section .profile-details strong {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .edit-profile-btn {
+            display: block;
+            background: var(--button-background);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 16px auto 0 auto;
+            text-align: center;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .edit-profile-btn:hover {
+            background: #5aa832;
+        }
+
+        /* Record Section */
+        .record-section {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            padding: 32px 28px;
+            min-width: 320px;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .record-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .record-section th,
+        .record-section td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .record-section th {
+            background: var(--card-background);
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .record-section td {
+            font-size: 0.95rem;
+            color: var(--text-color);
+        }
+
+        /* Settings Section */
+        .settings-section {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            padding: 32px 28px;
+            min-width: 320px;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .settings-section h3,
+        .settings-section h4 {
+            color: var(--text-color);
+        }
+
+        .settings-section label {
+            font-weight: 500;
+            color: var(--text-color);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .settings-section input,
+        .settings-section select {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 18px;
+            font-size: 1rem;
+        }
+
+        .settings-section .save-btn {
+            background: var(--button-background);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            width: 100%;
+            font-size: 1.08rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .settings-section .delete-account-btn {
+            background: #e66b6b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            width: 100%;
+            font-size: 1.08rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        /* Theme Toggle Container */
+        .theme-toggle-container {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+        }
+
+        /* Toggle Switch */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+
+        .theme-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        .theme-switch input:checked + .slider {
+            background-color: #6bb13f;
+        }
+
+        .theme-switch input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .home-icon {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .home-icon:hover {
+            background-color: var(--button-background);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .home-icon svg {
+            fill: none;
+            stroke: var(--text-color);
+            transition: stroke 0.3s;
+        }
+
+        body[data-theme="dark"] .home-icon {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+
+        body[data-theme="dark"] .home-icon:hover {
+            background-color: #4caf50;
+        }
+
+        body[data-theme="dark"] .home-icon svg {
+            stroke: #e0e0e0;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                flex-direction: row;
+                width: 100%;
+                box-shadow: none;
+                padding: 16px 0;
+            }
+
+            .sidebar-menu {
+                flex-direction: row;
+                gap: 0;
+            }
+
+            .sidebar-menu button {
+                flex: 1;
+                padding: 12px 0;
+                text-align: center;
+            }
+
+            .main-content {
+                padding: 16px 4px;
+            }
+
+            .profile-form,
+            .settings-section,
+            .record-section {
+                min-width: unset;
+                max-width: 98vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle-container">
+        <label class="theme-switch">
+            <input type="checkbox" id="themeSwitch" />
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile-pic">
+                <!-- Placeholder icon, replace with <img src="..." /> if needed -->
+                <span>👤</span>
+            </div>
+            <div class="sidebar-menu">
+                <button id="profileTab" class="active" onclick="showSection('profile')">Profile</button>
+                <button id="recordTab" onclick="showSection('records')">Records</button>
+                <button id="settingsTab" onclick="showSection('settings')">Settings</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Profile Section -->
+            <div class="profile-section" id="profileSection">
+                <h3>Profile</h3>
+                <div class="profile-details">
+                    <p><strong>Name:</strong> <span id="profileName">Loading...</span></p>
+                    <p><strong>Email:</strong> <span id="profileEmail">Loading...</span></p>
+                    <p><strong>State:</strong> <span id="profileState">Loading...</span></p>
+                </div>
+                <button class="edit-profile-btn" onclick="editProfile()">Edit Profile</button>
+            </div>
+
+            <!-- Record Section -->
+            <div class="record-section" id="recordSection">
+                <h3 style="margin-top:0;">Emission Records</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Travel (kg CO₂)</th>
+                            <th>Energy (kg CO₂)</th>
+                            <th>Waste (kg CO₂)</th>
+                            <th>Total (kg CO₂)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emissionTableBody">
+                        <!-- Rows will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="settings-section" id="settingsSection">
+                <h3 style="margin-top:0;">Edit Profile</h3>
+                <form id="settingsForm">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" name="editName" placeholder="Your Name">
+                    
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" name="editEmail" placeholder="Your Email">
+                    
+                    <label for="editState">State</label>
+                    <select id="editState" name="editState">
+                        <!-- Options will be dynamically populated -->
+                    </select>
+                    
+                    <hr>
+                    
+                    <h4>Additional Settings</h4>
+                    
+                    <label for="editPassword">Change Password</label>
+                    <input type="password" id="editPassword" name="editPassword" placeholder="New Password">
+                    
+                    <label for="notificationToggle">Notifications</label>
+                    <select id="notificationToggle" name="notificationToggle">
+                        <option value="enabled">Enabled</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                    
+                    <label for="themeToggle">Theme</label>
+                    <select id="themeToggle" name="themeToggle">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                    
+                    <label for="languageSelect">Language</label>
+                    <select id="languageSelect" name="languageSelect">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                    </select>
+                    
+                    <label for="carbonGoal">Carbon Reduction Goal (kg CO₂)</label>
+                    <input type="number" id="carbonGoal" name="carbonGoal" placeholder="Enter your goal">
+                    
+                    <button type="submit" class="save-btn">Save Changes</button>
+                    
+                    <button type="button" class="delete-account-btn" onclick="deleteAccount()">Delete Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Home Icon -->
+    <a href="main.html" class="home-icon" aria-label="Home" style="margin-left:12px;">
+        <!-- User/Profile SVG icon -->
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+            <path d="M3 9.5L12 3l9 6.5v10.5a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-5h-2v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" stroke="#6bb13f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeSwitch = document.getElementById('themeSwitch');
+            const currentTheme = localStorage.getItem('theme') || 'light';
+
+            // Apply the saved theme
+            document.body.setAttribute('data-theme', currentTheme);
+            themeSwitch.checked = currentTheme === 'dark';
+
+            // Toggle theme on checkbox change
+            themeSwitch.addEventListener('change', function () {
+                const theme = themeSwitch.checked ? 'dark' : 'light';
+                document.body.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            });
+
+            fetchUserData();
+            populateStates();
+
+            // Fetch user data for the Profile Section
+            async function fetchUserData() {
+                try {
+                    const response = await fetch('fetch_user.php');
+                    const user = await response.json();
+
+                    console.log('User Data:', user); // Debugging output
+
+                    if (user.error) {
+                        console.error(user.error);
+                        alert('Error: ' + user.error);
+                        return;
+                    }
+
+                    document.getElementById('profileName').textContent = user.username || 'N/A';
+                    document.getElementById('profileEmail').textContent = user.email || 'N/A';
+                    document.getElementById('profileState').textContent = user.state_name || 'N/A';
+
+                    document.getElementById('editName').value = user.username || '';
+                    document.getElementById('editEmail').value = user.email || '';
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                    alert('Failed to load user data. Please try again.');
+                }
+            }
+
+            // Populate state dropdown in the Settings Section
+            async function populateStates() {
+                try {
+                    const response = await fetch('fetch_states.php'); // PHP script to fetch states
+                    const states = await response.json();
+
+                    const stateSelect = document.getElementById('editState');
+                    stateSelect.innerHTML = ''; // Clear existing options
+
+                    states.forEach(state => {
+                        const option = document.createElement('option');
+                        option.value = state.id;
+                        option.textContent = state.state_name;
+                        stateSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error fetching states:', error);
+                }
+            }
+
+            // Handle form submission for updating user data
+            document.getElementById('settingsForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const updatedData = {
+                    username: document.getElementById('editName').value,
+                    email: document.getElementById('editEmail').value,
+                    state_id: document.getElementById('editState').value,
+                    password: document.getElementById('editPassword').value,
+                    notifications: document.getElementById('notificationToggle').value,
+                    theme: document.getElementById('themeToggle').value,
+                    language: document.getElementById('languageSelect').value,
+                    carbon_goal: document.getElementById('carbonGoal').value
+                };
+
+                try {
+                    const response = await fetch('update_user.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(result.message);
+                        fetchUserData(); // Refresh profile data
+                    } else {
+                        console.error(result.error);
+                    }
+                } catch (error) {
+                    console.error('Error updating user data:', error);
+                }
+            });
+        });
+
+        function showSection(section) {
+            document.getElementById('profileSection').style.display = section === 'profile' ? 'block' : 'none';
+            document.getElementById('recordSection').style.display = section === 'records' ? 'block' : 'none';
+            document.getElementById('settingsSection').style.display = section === 'settings' ? 'block' : 'none';
+
+            document.getElementById('profileTab').classList.toggle('active', section === 'profile');
+            document.getElementById('recordTab').classList.toggle('active', section === 'records');
+            document.getElementById('settingsTab').classList.toggle('active', section === 'settings');
+
+            if (section === 'records') {
+                loadEmissionRecords(); // Load records when the section is shown
+            }
+        }
+
+        function logout() {
+            // Redirect to logout or clear session
+            window.location.href = 'logout.php';
+        }
+
+        // Optional: handle form submit
+        document.getElementById('profileSection').addEventListener('submit', function (e) {
+            e.preventDefault();
+            alert('Profile saved!');
+            // Add AJAX to save profile if needed
+        });
+
+        async function loadEmissionRecords() {
+            try {
+                const response = await fetch('fetch_emissions.php'); // PHP script to fetch emission records
+                const records = await response.json();
+
+                if (records.error) {
+                    console.error(records.error);
+                    return;
+                }
+
+                const tableBody = document.getElementById('emissionTableBody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                // Iterate through each record and populate the table
+                records.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.date}</td>
+                        <td>${parseFloat(record.travel_emissions).toFixed(2)} kg</td>
+                        <td>${parseFloat(record.energy_emissions).toFixed(2)} kg</td>
+                        <td>${parseFloat(record.waste_emissions).toFixed(2)} kg</td>
+                        <td>${parseFloat(record.total_emissions).toFixed(2)} kg</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading emission records:", error);
+            }
+        }
+
+        showSection('profile');        // Initial load
+
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                // Redirect to account deletion endpoint
+                window.location.href = 'delete_account.php';
+            }
+        }
+    </script>
+</body>
+</html>
