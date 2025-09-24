@@ -5,7 +5,6 @@ A comprehensive web application for tracking and visualizing personal carbon emi
 ## 📖 Table of Contents
 
 - [Features](#-features)
-- [Screenshots](#-screenshots)
 - [Technologies Used](#-technologies-used)
 - [Database Schema](#-database-schema)
 - [Installation](#-installation)
@@ -55,15 +54,6 @@ A comprehensive web application for tracking and visualizing personal carbon emi
 - **Touch-friendly Controls**: Large buttons and intuitive navigation
 - **Progressive Enhancement**: Works offline with cached data
 - **Swipe Gestures**: Enhanced mobile interaction patterns
-
-## 🖼️ Screenshots
-
-The application features a modern, eco-friendly design with:
-
-- Clean login/registration interface with theme switching
-- Interactive dashboard with emission visualization
-- Activity tracking with category-based icons
-- Profile management and emission history
 
 ## 🛠️ Technologies Used
 
